@@ -1,10 +1,10 @@
-# WorkingDir
+# workingdir
 
 Package for running quick commands and simple interaction with directories.
 
 ### Quick example
 
-```
+```go
 package main
 
 import (
@@ -18,7 +18,7 @@ func main() {
 
 ### Another example
 
-```
+```go
 package main
 
 import (
