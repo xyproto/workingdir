@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-var curdir = "."
-
 type Dir struct {
 	path string
 }
@@ -55,20 +53,51 @@ func (d *Dir) List() []string {
 	return s
 }
 
+// Path returns the path of the directory
+func (d *Dir) Path() string {
+	return d.path
+}
+
 // Execute a command in the current directory.
-// Return the combined output or an empty string.
+// Return the combined output, or an empty string.
 func (d *Dir) Run(cmd string) string {
+	var cmdo *exec.Cmd
 	if err := d.ensure(); err != nil {
 		// Return an empty string if we can't enter the correct directory
 		return ""
 	}
-	var cmdo *exec.Cmd
 	if strings.Contains(cmd, " ") {
 		fields := strings.Split(cmd, " ")
 		cmdo = exec.Command(fields[0], fields[1:]...)
 	} else {
 		cmdo = exec.Command(cmd)
 	}
-	b, _ := cmdo.CombinedOutput()
+	b, err := cmdo.CombinedOutput()
+	if err != nil {
+		return ""
+	}
 	return string(b)
+}
+
+// Execute a command in the current directory.
+// Return the combined output, trimmed, or an empty string.
+func (d *Dir) TrimRun(cmd string) string {
+	return strings.TrimSpace(d.Run(cmd))
+}
+
+// Execute a command in the current directory.
+// Return the combined output or an empty string.
+func Run(cmd string) string {
+	d, err := New(".")
+	if err != nil {
+		// Return an empty string if we can't enter the correct directory
+		return ""
+	}
+	return d.Run(cmd)
+}
+
+// Execute a command in the current directory.
+// Return the combined output, trimmed, or an empty string.
+func TrimRun(cmd string) string {
+	return strings.TrimSpace(Run(cmd))
 }
